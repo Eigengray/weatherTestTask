@@ -18,30 +18,25 @@ $sma = new Sma();
 $result = [];
 array_push($result,
     $temperatureData->getDataForYear(),
-    $sma->getSma($temperatureData->getDataForYear(),5)
+    $sma->getSma($temperatureData->getDataForYear(),3)
 );
 
-$resultMonthRow = $temperatureData->getDataForMonths();
-$resultMonthModified = [];
-$resultMonth = [];
-for ( $i = 0; $i < count($resultMonthRow); $i++){
-    array_push($resultMonthModified, $sma->getSma($resultMonthRow[$i],5));
+function createRowAndModifiedArray($resultRow){
+    $resultModified = [];
+    $sma = new Sma();
+    for ( $i = 0; $i < count($resultRow); $i++){
+        array_push($resultModified, $sma->getSma($resultRow[$i],3));
+    }
+    return array_merge( [
+        'row' => $resultRow,
+        'modified' => $resultModified
+    ]);
 }
-$resultMonth = array_merge( [
-    'row' => $resultMonthRow,
-    'modified' => $resultMonthModified
-]);
 
+$resultMonthRow = $temperatureData->getDataForMonths();
+$resultMonth = createRowAndModifiedArray($resultMonthRow);
 
 $resultWeekRow = $temperatureData->getDataForWeeks();
-$resultWeekModified = [];
-$resultWeek = [];
-for ( $i = 0; $i < count($resultWeekRow); $i++){
-    array_push($resultWeekModified, $sma->getSma($resultWeekRow[$i],3));
-}
-$resultWeek = array_merge( [
-    'row' => $resultWeekRow,
-    'modified' => $resultWeekModified
-]);
+$resultWeek = createRowAndModifiedArray($resultWeekRow);
 
 //print("<pre>".print_r($resultWeek, true)."</pre>");
